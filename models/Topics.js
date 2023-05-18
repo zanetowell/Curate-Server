@@ -1,7 +1,7 @@
 const mongoose = require ("mongoose")
 
 const TopicsSchema = new mongoose.Schema({
-    name: {String, required: true},
+    name: String,
     icon: String,
     description: String,
 })
