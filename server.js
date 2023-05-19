@@ -1,22 +1,23 @@
-///////////////////////////////
+////////////////////////////////
 // DEPENDENCIES
 ////////////////////////////////
-// get .env variables
 require("dotenv").config();
-// pull PORT from .env, give default value of 4000
-// pull MONGODB_URL from .env
 const { PORT = 4000, MONGODB_URL } = process.env;
-// import express
 const express = require("express");
-// create application object
 const app = express();
-// import mongoose
 const mongoose = require("mongoose");
-// import middlware
 const cors = require("cors");
 const morgan = require("morgan");
-// import controllers
-const topicsRouter = require("./controllers/topicsController")
+const admin = require("firebase-admin")
+
+
+const serviceAccount = require("./curate-firebase.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+
 
 ///////////////////////////////
 // DATABASE CONNECTION
@@ -28,9 +29,9 @@ mongoose.connect(MONGODB_URL, {
 });
 // Connection Events
 mongoose.connection
-    .on("open", () => console.log("You are connected to mongoose"))
-    .on("close", () => console.log("You are disconnected from mongoose"))
-    .on("error", (error) => console.log(error));
+.on("open", () => console.log("You are connected to mongoose"))
+.on("close", () => console.log("You are disconnected from mongoose"))
+.on("error", (error) => console.log(error));
 
 /////////////////////////////////
 // MiddleWare
@@ -40,9 +41,30 @@ app.use(morgan("dev")); // logging
 app.use(express.json()); // parse json bodies
 app.use(express.urlencoded({extended:true}))
 
+app.use(async (req, res, next) => {
+    const token = req.get('Authorization')
+    if(token) {
+        const user = await admin.auth().verifyIdToken(token.replace('Bearer ', ''))
+        req.user = user
+    } else {
+        req.user = null
+    }
+    next()
+})
+
+const isAuthenticated = (req, res, next) => {
+    if(!req.user) {
+        return res.status(401).json({message: 'You must be logged in to continue!'})
+    } else {
+        return next()
+    }
+}
+
+app.use(isAuthenticated)
 
 // Controllers
-app.use('/topics', topicsRouter)
+const topicsController = require("./controllers/topicsController")
+app.use('/topics', topicsController)
 
 // Test route
 app.get("/", (req, res) => {

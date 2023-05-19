@@ -2,8 +2,9 @@ const express = require("express");
 const Topics = require("../models/Topics");
 const topicsRouter = express.Router();
 
+
 // Index
-topicsRouter.get("/topics", async (req, res) => {
+topicsRouter.get("/", async (req, res) => {
     try {
         // send all topics
         res.json(await Topics.find({}));
@@ -14,7 +15,7 @@ topicsRouter.get("/topics", async (req, res) => {
 });
 
 // Delete
-topicsRouter.delete("/topics/:id", async (req, res) => {
+topicsRouter.delete("/:id", async (req, res) => {
     try {
         // send all topics
         res.json(await Topics.findByIdAndRemove(req.params.id));
@@ -25,7 +26,7 @@ topicsRouter.delete("/topics/:id", async (req, res) => {
 });
 
 // Update
-topicsRouter.put("/topics/:id", async (req, res) => {
+topicsRouter.put("/:id", async (req, res) => {
     try {
         // send all topics
         res.json(
@@ -38,7 +39,7 @@ topicsRouter.put("/topics/:id", async (req, res) => {
     });
 
 // Create
-topicsRouter.post("/topics", async (req, res) => {
+topicsRouter.post("/", async (req, res) => {
     try {
         // send all topics
         res.json(await Topics.create(req.body));
