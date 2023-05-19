@@ -7,7 +7,8 @@ const topicsRouter = express.Router();
 topicsRouter.get("/", async (req, res) => {
     try {
         // send all topics
-        res.json(await Topics.find({}));
+        const googleId = req.user.uid
+        res.json(await Topics.find({googleId}));
     } catch (error) {
         //send error
         res.status(400).json(error);
@@ -42,6 +43,7 @@ topicsRouter.put("/:id", async (req, res) => {
 topicsRouter.post("/", async (req, res) => {
     try {
         // send all topics
+        req.body.googleId = req.user.uid
         res.json(await Topics.create(req.body));
     } catch (error) {
         //send error

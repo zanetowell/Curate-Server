@@ -1,6 +1,4 @@
-////////////////////////////////
 // DEPENDENCIES
-////////////////////////////////
 require("dotenv").config();
 const { PORT = 4000, MONGODB_URL } = process.env;
 const express = require("express");
@@ -10,7 +8,6 @@ const cors = require("cors");
 const morgan = require("morgan");
 const admin = require("firebase-admin")
 
-
 const serviceAccount = require("./curate-firebase.json");
 
 admin.initializeApp({
@@ -18,10 +15,7 @@ admin.initializeApp({
 });
 
 
-
-///////////////////////////////
 // DATABASE CONNECTION
-////////////////////////////////
 // Establish Connection
 mongoose.connect(MONGODB_URL, {
     useUnifiedTopology: true,
@@ -33,9 +27,8 @@ mongoose.connection
 .on("close", () => console.log("You are disconnected from mongoose"))
 .on("error", (error) => console.log(error));
 
-/////////////////////////////////
-// MiddleWare
-////////////////////////////////
+
+// MIDDLEWARE
 app.use(cors()); // to prevent cors errors, open access to all origins
 app.use(morgan("dev")); // logging
 app.use(express.json()); // parse json bodies
@@ -44,8 +37,12 @@ app.use(express.urlencoded({extended:true}))
 app.use(async (req, res, next) => {
     const token = req.get('Authorization')
     if(token) {
-        const user = await admin.auth().verifyIdToken(token.replace('Bearer ', ''))
-        req.user = user
+        try{
+            const user = await admin.auth().verifyIdToken(token.replace('Bearer ', ''))
+            req.user = user
+        } catch (error) {
+            req.user = null
+        }
     } else {
         req.user = null
     }
@@ -62,16 +59,16 @@ const isAuthenticated = (req, res, next) => {
 
 app.use(isAuthenticated)
 
-// Controllers
+// CONTROLLERS
 const topicsController = require("./controllers/topicsController")
 app.use('/topics', topicsController)
+
 
 // Test route
 app.get("/", (req, res) => {
     res.send("hello world");
 });
     
-///////////////////////////////
+
 // LISTENER
-////////////////////////////////
 app.listen(PORT, () => console.log(`listening on PORT ${PORT}`));
