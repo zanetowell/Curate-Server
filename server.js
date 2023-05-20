@@ -63,6 +63,9 @@ app.use(isAuthenticated)
 const topicsController = require("./controllers/topicsController")
 app.use('/topics', topicsController)
 
+const flashcardsController = require("./controllers/flashcardsController")
+app.use('/cards', flashcardsController)
+
 
 // Test route
 app.get("/", (req, res) => {

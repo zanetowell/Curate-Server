@@ -5,8 +5,10 @@ const TopicsSchema = new mongoose.Schema({
     icon: String,
     description: String,
     googleId: String,
+    cards: [{type: mongoose.Schema.Types.ObjectId, ref: 'Flashcards'}],
+    archived: {type: Boolean, default: false},
 })
 
-const Topics = mongoose.model("Topics", TopicsSchema)
 
+const Topics = mongoose.model("Topics", TopicsSchema)
 module.exports = Topics
