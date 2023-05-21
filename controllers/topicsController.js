@@ -8,7 +8,7 @@ topicsRouter.get("/", async (req, res) => {
     try {
         // send all topics
         const googleId = req.user.uid
-        res.json(await Topics.find({googleId}));
+        res.json(await Topics.find({googleId}))
     } catch (error) {
         //send error
         res.status(400).json(error);

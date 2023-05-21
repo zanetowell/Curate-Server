@@ -1,6 +1,7 @@
 const mongoose = require ("mongoose")
 
 const FlashcardsSchema = new mongoose.Schema({
+    topic: String,
     front: String,
     back: String,
     googleId: String,
