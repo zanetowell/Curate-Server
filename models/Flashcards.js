@@ -5,6 +5,7 @@ const FlashcardsSchema = new mongoose.Schema({
     front: String,
     back: String,
     googleId: String,
+    topic_id: String,
 })
 
 const Flashcards = mongoose.model("Flashcards", FlashcardsSchema)
